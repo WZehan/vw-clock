@@ -1,0 +1,622 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>VW Clock</title>
+  <style>
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+      color: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    body {
+      cursor: pointer;
+    }
+
+    .screen {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      overflow: hidden;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      -webkit-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+    }
+
+    .clock {
+      position: relative;
+      width: 170px;
+      height: 170px;
+      margin: 0 auto;
+      border-radius: 50%;
+    }
+
+    .hand {
+      position: absolute;
+      left: 50%;
+      bottom: 50%;
+      width: 4px;
+      height: 58px;
+      margin-left: -2px;
+      background: #fff;
+      border-radius: 8px;
+      -webkit-transform-origin: 50% 100%;
+      transform-origin: 50% 100%;
+      -webkit-box-shadow: 0 0 8px rgba(255, 255, 255, .35);
+      box-shadow: 0 0 8px rgba(255, 255, 255, .35);
+    }
+
+    .pin {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 9px;
+      height: 9px;
+      margin: -4.5px 0 0 -4.5px;
+      border-radius: 50%;
+      background: #f5f5f5;
+      -webkit-box-shadow: 0 0 10px rgba(255, 255, 255, .5);
+      box-shadow: 0 0 10px rgba(255, 255, 255, .5);
+    }
+
+    .tick {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 2px;
+      height: 8px;
+      margin-left: -1px;
+      margin-top: -78px;
+      background: rgba(255, 255, 255, .68);
+      -webkit-transform-origin: 1px 78px;
+      transform-origin: 1px 78px;
+    }
+
+    .tick.big {
+      width: 3px;
+      height: 12px;
+      margin-left: -1.5px;
+      background: rgba(255, 255, 255, .9);
+    }
+
+    .date {
+      margin-top: 24px;
+      text-align: center;
+      color: rgba(255, 255, 255, .86);
+      font-size: 22px;
+      letter-spacing: 1px;
+      text-shadow: 0 0 8px rgba(255, 255, 255, .2);
+    }
+
+    /* Style 1 */
+    #style1 {
+      background: -webkit-linear-gradient(top, #020304 0%, #070b14 50%, #151a2d 100%);
+      background: linear-gradient(to bottom, #020304 0%, #070b14 50%, #151a2d 100%);
+    }
+
+    #style1 .map {
+      position: absolute;
+      left: 50%;
+      top: 16%;
+      width: 560px;
+      height: 315px;
+      margin-left: -280px;
+      background: url("assets/dotted-world-map-alpha.png") center center no-repeat;
+      background-size: contain;
+      opacity: .46;
+    }
+
+    #style1 .clock-wrap {
+      top: 48%;
+    }
+
+    #style1 .clock {
+      width: 154px;
+      height: 154px;
+    }
+
+    #style1 .tick {
+      margin-top: -70px;
+      -webkit-transform-origin: 1px 70px;
+      transform-origin: 1px 70px;
+      background: rgba(255, 255, 255, .76);
+    }
+
+    #style1 .hour-hand {
+      width: 5px;
+      height: 66px;
+      margin-left: -2.5px;
+      background: #f7f7f7;
+    }
+
+    #style1 .minute-hand {
+      width: 3px;
+      height: 66px;
+      margin-left: -1.5px;
+      background: #fff;
+    }
+
+    #style1 .reflection {
+      position: absolute;
+      left: 50%;
+      top: 57%;
+      width: 190px;
+      height: 72px;
+      margin-left: -95px;
+      overflow: hidden;
+      opacity: .48;
+      -webkit-transform: scaleY(.58);
+      transform: scaleY(.58);
+      -webkit-filter: blur(.4px);
+      filter: blur(.4px);
+    }
+
+    .reflection-svg {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 190px;
+      height: 72px;
+      overflow: visible;
+    }
+
+    .reflection-line {
+      stroke: rgba(255, 255, 255, .74);
+      stroke-width: 1.4;
+      stroke-linecap: round;
+    }
+
+    .reflection-line.big {
+      stroke: rgba(255, 255, 255, .92);
+      stroke-width: 2.1;
+    }
+
+    /* Style 2 */
+    #style2 {
+      background: #000;
+    }
+
+    #style2 .clock-wrap {
+      top: 43%;
+    }
+
+    #style2 .clock {
+      width: 172px;
+      height: 172px;
+      border: 1px solid rgba(255, 255, 255, .25);
+      -webkit-box-shadow: inset 0 0 20px rgba(255, 255, 255, .04);
+      box-shadow: inset 0 0 20px rgba(255, 255, 255, .04);
+    }
+
+    #style2 .tick {
+      margin-top: -79px;
+      -webkit-transform-origin: 1px 79px;
+      transform-origin: 1px 79px;
+    }
+
+    #style2 .hour-hand {
+      width: 7px;
+      height: 48px;
+      margin-left: -3.5px;
+      background: #fff;
+    }
+
+    #style2 .minute-hand {
+      width: 4px;
+      height: 67px;
+      margin-left: -2px;
+      background: #f8f8f8;
+    }
+
+    #style2 .second-hand {
+      width: 2px;
+      height: 72px;
+      margin-left: -1px;
+      background: #ff4a4a;
+      -webkit-box-shadow: 0 0 9px rgba(255, 50, 50, .75);
+      box-shadow: 0 0 9px rgba(255, 50, 50, .75);
+    }
+
+    #style2 .second-hand:after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -22px;
+      width: 2px;
+      height: 22px;
+      background: rgba(255, 74, 74, .8);
+      border-radius: 8px;
+    }
+
+    /* Style 3 */
+    #style3 {
+      background: #050708;
+    }
+
+    #style3 .map {
+      position: absolute;
+      left: 50%;
+      top: 16%;
+      width: 560px;
+      height: 315px;
+      margin-left: -280px;
+      background: url("assets/dotted-world-map-alpha.png") center center no-repeat;
+      background-size: contain;
+      opacity: .28;
+    }
+
+    #style3 .digital-wrap {
+      top: 45%;
+      width: 250px;
+      text-align: center;
+    }
+
+    .sweep {
+      position: relative;
+      width: 184px;
+      height: 184px;
+      margin: 0 auto;
+      border-radius: 50%;
+      border: 1px solid rgba(90, 220, 255, .38);
+    }
+
+    .arc-ring {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 184px;
+      height: 184px;
+      border-radius: 50%;
+      -webkit-transform-origin: 50% 50%;
+      transform-origin: 50% 50%;
+    }
+
+    .sweep-svg {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 184px;
+      height: 184px;
+      overflow: visible;
+    }
+
+    .sweep-trail {
+      fill: url(#trailGradient);
+      opacity: .72;
+    }
+
+    .sweep-hand {
+      stroke: rgba(126, 230, 255, .96);
+      stroke-width: .9;
+      stroke-linecap: round;
+      -webkit-filter: drop-shadow(0 0 4px rgba(84, 218, 255, .75));
+      filter: drop-shadow(0 0 4px rgba(84, 218, 255, .75));
+    }
+
+    .digital-time {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      margin-top: -22px;
+      font-size: 39px;
+      line-height: 44px;
+      font-weight: normal;
+      color: #fff2d8;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(255, 230, 180, .35);
+    }
+
+    #style3 .date {
+      margin-top: 20px;
+      color: rgba(255, 255, 255, .9);
+      font-size: 21px;
+    }
+
+    @media (min-width: 700px) {
+      .clock {
+        width: 190px;
+        height: 190px;
+      }
+
+      #style1 .clock {
+        width: 174px;
+        height: 174px;
+      }
+
+      #style1 .tick {
+        margin-top: -80px;
+        -webkit-transform-origin: 1px 80px;
+        transform-origin: 1px 80px;
+      }
+
+      #style1 .hour-hand {
+        height: 76px;
+      }
+
+      #style1 .minute-hand {
+        height: 76px;
+      }
+
+      #style2 .clock {
+        width: 192px;
+        height: 192px;
+      }
+
+      #style2 .tick {
+        margin-top: -89px;
+        -webkit-transform-origin: 1px 89px;
+        transform-origin: 1px 89px;
+      }
+
+      #style2 .hour-hand {
+        height: 55px;
+      }
+
+      #style2 .minute-hand {
+        height: 77px;
+      }
+
+      #style2 .second-hand {
+        height: 82px;
+      }
+
+      .date {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="style1" class="screen active">
+    <div class="map" id="map1"></div>
+    <div class="center clock-wrap">
+      <div class="clock analog first-clock" id="clock1"></div>
+    </div>
+    <div class="reflection" id="reflection1">
+      <svg class="reflection-svg" viewBox="0 0 190 72">
+        <defs>
+          <linearGradient id="reflectionFade" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="white" stop-opacity="0" />
+            <stop offset="28%" stop-color="white" stop-opacity=".42" />
+            <stop offset="50%" stop-color="white" stop-opacity="1" />
+            <stop offset="72%" stop-color="white" stop-opacity=".42" />
+            <stop offset="100%" stop-color="white" stop-opacity="0" />
+          </linearGradient>
+          <mask id="reflectionMask">
+            <rect x="0" y="0" width="190" height="72" fill="url(#reflectionFade)"></rect>
+          </mask>
+        </defs>
+        <g id="reflectionMirror" mask="url(#reflectionMask)" transform="translate(0 72) scale(1 -1)">
+          <g id="reflectionMarks"></g>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div id="style2" class="screen">
+    <div class="center clock-wrap">
+      <div class="clock analog second-clock" id="clock2"></div>
+      <div class="date" id="date2"></div>
+    </div>
+  </div>
+
+  <div id="style3" class="screen">
+    <div class="map" id="map3"></div>
+    <div class="center digital-wrap">
+      <div class="sweep" id="sweep">
+        <svg class="sweep-svg" viewBox="0 0 184 184">
+          <defs>
+            <linearGradient id="trailGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="rgb(75, 220, 255)" stop-opacity="0" />
+              <stop offset="55%" stop-color="rgb(75, 220, 255)" stop-opacity=".10" />
+              <stop offset="82%" stop-color="rgb(75, 220, 255)" stop-opacity=".32" />
+              <stop offset="100%" stop-color="rgb(75, 220, 255)" stop-opacity=".82" />
+            </linearGradient>
+            <radialGradient id="trailAlphaGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="black" stop-opacity="0" />
+              <stop offset="36%" stop-color="white" stop-opacity=".12" />
+              <stop offset="70%" stop-color="white" stop-opacity=".58" />
+              <stop offset="100%" stop-color="white" stop-opacity="1" />
+            </radialGradient>
+            <mask id="trailMask">
+              <rect x="0" y="0" width="184" height="184" fill="url(#trailAlphaGradient)"></rect>
+            </mask>
+          </defs>
+          <g id="sweepLayer">
+            <path id="sweepTrail" class="sweep-trail" mask="url(#trailMask)" d=""></path>
+            <line class="sweep-hand" x1="92" y1="92" x2="92" y2="7"></line>
+          </g>
+        </svg>
+        <div class="digital-time" id="digitalTime">00:00</div>
+      </div>
+      <div class="date" id="date3"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var screens = [
+        document.getElementById('style1'),
+        document.getElementById('style2'),
+        document.getElementById('style3')
+      ];
+      var current = 0;
+
+      function pad(num) {
+        return num < 10 ? '0' + num : '' + num;
+      }
+
+      function setRotate(el, deg) {
+        el.style.webkitTransform = 'rotate(' + deg + 'deg)';
+        el.style.transform = 'rotate(' + deg + 'deg)';
+      }
+
+      function makeTicks(clock, count, bigEvery) {
+        var i;
+        for (i = 0; i < count; i++) {
+          var tick = document.createElement('span');
+          tick.className = i % bigEvery === 0 ? 'tick big' : 'tick';
+          setRotate(tick, i * (360 / count));
+          clock.appendChild(tick);
+        }
+      }
+
+      function makeHand(clock, className) {
+        var hand = document.createElement('span');
+        hand.className = 'hand ' + className;
+        clock.appendChild(hand);
+        return hand;
+      }
+
+      function makeAnalog(clockId, hasSecond) {
+        var clock = document.getElementById(clockId);
+        makeTicks(clock, 60, 5);
+        var hour = makeHand(clock, 'hour-hand');
+        var minute = makeHand(clock, 'minute-hand');
+        var second = null;
+        if (hasSecond) {
+          second = makeHand(clock, 'second-hand');
+        }
+        var pin = document.createElement('span');
+        pin.className = 'pin';
+        clock.appendChild(pin);
+        return {
+          hour: hour,
+          minute: minute,
+          second: second
+        };
+      }
+
+      function pointOnCircle(cx, cy, r, deg) {
+        var rad = (deg - 90) * Math.PI / 180;
+        return {
+          x: cx + r * Math.cos(rad),
+          y: cy + r * Math.sin(rad)
+        };
+      }
+
+      function setupSweepTrail() {
+        var cx = 92;
+        var cy = 92;
+        var outer = 85;
+        var start = -90;
+        var end = 0;
+        var p1 = pointOnCircle(cx, cy, outer, start);
+        var p2 = pointOnCircle(cx, cy, outer, end);
+        var d = [
+          'M', cx, cy,
+          'L', p1.x.toFixed(2), p1.y.toFixed(2),
+          'A', outer, outer, 0, 0, 1, p2.x.toFixed(2), p2.y.toFixed(2),
+          'Z'
+        ].join(' ');
+        document.getElementById('sweepTrail').setAttribute('d', d);
+      }
+
+      function makeReflectionTicks() {
+        var marks = document.getElementById('reflectionMarks');
+        var ns = 'http://www.w3.org/2000/svg';
+        var cx = 95;
+        var cy = -50;
+        var r1 = 76;
+        var r2 = 88;
+        var i;
+        for (i = 25; i <= 35; i++) {
+          var deg = i * 6;
+          var fade = 1 - Math.abs(i - 30) / 6;
+          var opacity = Math.max(0, Math.min(1, fade));
+          var inner = pointOnCircle(cx, cy, i % 5 === 0 ? r1 - 3 : r1 + 3, deg);
+          var outer = pointOnCircle(cx, cy, r2, deg);
+          var line = document.createElementNS(ns, 'line');
+          line.setAttribute('class', i % 5 === 0 ? 'reflection-line big' : 'reflection-line');
+          line.setAttribute('opacity', opacity.toFixed(2));
+          line.setAttribute('x1', inner.x.toFixed(2));
+          line.setAttribute('y1', inner.y.toFixed(2));
+          line.setAttribute('x2', outer.x.toFixed(2));
+          line.setAttribute('y2', outer.y.toFixed(2));
+          marks.appendChild(line);
+        }
+      }
+
+      var analog1 = makeAnalog('clock1', false);
+      var analog2 = makeAnalog('clock2', true);
+      setupSweepTrail();
+      makeReflectionTicks();
+
+      function updateTime() {
+        var now = new Date();
+        var hours = now.getHours();
+        var minutes = now.getMinutes();
+        var seconds = now.getSeconds();
+        var ms = now.getMilliseconds();
+        var smoothSecondAngle = (seconds + ms / 1000) * 6;
+        var jumpSecondAngle = seconds * 6;
+        var minuteAngle = (minutes + seconds / 60) * 6;
+        var hourAngle = ((hours % 12) + minutes / 60) * 30;
+        var month = pad(now.getMonth() + 1);
+        var day = pad(now.getDate());
+        var dateText2 = now.getFullYear() + '-' + month + '-' + day;
+        var dateText3 = now.getFullYear() + '.' + month + '.' + day;
+
+        setRotate(analog1.hour, hourAngle);
+        setRotate(analog1.minute, minuteAngle);
+        setRotate(analog2.hour, hourAngle);
+        setRotate(analog2.minute, minuteAngle);
+        setRotate(analog2.second, jumpSecondAngle);
+        document.getElementById('sweepLayer').setAttribute('transform', 'rotate(' + smoothSecondAngle + ' 92 92)');
+
+        document.getElementById('date2').innerHTML = dateText2;
+        document.getElementById('date3').innerHTML = dateText3;
+        document.getElementById('digitalTime').innerHTML = pad(hours) + ':' + pad(minutes);
+      }
+
+      function requestFrame(fn) {
+        var raf = window.requestAnimationFrame ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame ||
+          function (callback) {
+            return window.setTimeout(callback, 16);
+          };
+        return raf(fn);
+      }
+
+      function tick() {
+        updateTime();
+        requestFrame(tick);
+      }
+
+      function showNext() {
+        screens[current].className = 'screen';
+        current = (current + 1) % screens.length;
+        screens[current].className = 'screen active';
+      }
+
+      document.body.onclick = showNext;
+      tick();
+    }());
+  </script>
+</body>
+</html>
