@@ -1,0 +1,4 @@
+.DS_Store
+android/build/
+android/debug-release.keystore
+dist/*.idsig

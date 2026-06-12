@@ -31,6 +31,10 @@ The page is intentionally dependency-free so it can run in older embedded WebVie
 - `index.html` - Main application file containing markup, styles, and clock logic.
 - `assets/dotted-world-map.png` - Generated dotted world map image.
 - `assets/dotted-world-map-alpha.png` - Transparent-background version used by the clock UI.
+- `assets/app-icon-source.png` - Source image for the Android launcher icon.
+- `android/` - Minimal native Android WebView shell.
+- `scripts/build-apk.sh` - Script for packaging the Android APK without Gradle.
+- `scripts/make-icons.py` - Script for generating Android launcher icon densities.
 
 ## Local Preview
 
@@ -44,6 +48,37 @@ Then open:
 
 ```text
 http://localhost:8000/
+```
+
+## Android APK
+
+The project includes a minimal native Android WebView shell. It loads the local `index.html` from APK assets and does not use Flutter, Cordova, or other large runtimes.
+
+Compatibility:
+
+- `minSdkVersion`: 14, compatible with Android 4.0+
+- Android 5.1 car head units are supported
+- Landscape fullscreen WebView
+- Signed with APK v1/v2/v3 schemes; v1 signing keeps Android 4/5 installation compatibility
+
+Build the APK:
+
+```bash
+sh scripts/build-apk.sh
+```
+
+The generated APK is written to:
+
+```text
+dist/vw-clock.apk
+```
+
+The build script expects a local Android SDK at either `$ANDROID_HOME` or `~/Library/Android/sdk`, with Android build tools `34.0.0` and platform `android-34` installed. The app still targets old devices through `minSdkVersion=14`.
+
+To regenerate launcher icon density assets from `assets/app-icon-source.png`:
+
+```bash
+/Users/zehanwang/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 scripts/make-icons.py
 ```
 
 ## Compatibility Notes
