@@ -1,0 +1,51 @@
+# VW Clock
+
+Volkswagen-style infotainment clock pages built with plain HTML, CSS, and JavaScript.
+
+Live site: https://vw-clock.wangzehan.cn/
+
+## Overview
+
+This project implements three clock display styles inspired by Volkswagen in-car infotainment screens. It is designed as a lightweight single-page web app and uses the system time for all clock displays.
+
+The page is intentionally dependency-free so it can run in older embedded WebView environments, including Android 5.1-based car head units.
+
+## Features
+
+- Three clock styles in one page.
+- Tap or click anywhere on the screen to switch between styles.
+- Analog clocks use the device system time.
+- Date display formats are customized per style.
+- Dotted world map background asset for the infotainment-style screens.
+- Smooth digital clock sweep effect using SVG.
+- No build step or external runtime dependency.
+
+## Clock Styles
+
+1. Analog clock with dotted world map background, central gradient dial, jumping second hand, and mirrored bottom tick reflection.
+2. Analog clock on a pure black background with white hour/minute hands, red jumping second hand, and `yyyy-mm-dd` date.
+3. Digital clock with a sweeping second-hand trail, dotted world map background, and `yyyy.mm.dd` date.
+
+## Files
+
+- `index.html` - Main application file containing markup, styles, and clock logic.
+- `assets/dotted-world-map.png` - Generated dotted world map image.
+- `assets/dotted-world-map-alpha.png` - Transparent-background version used by the clock UI.
+
+## Local Preview
+
+Run a local static server from the project root:
+
+```bash
+python3 -m http.server 8000
+```
+
+Then open:
+
+```text
+http://localhost:8000/
+```
+
+## Compatibility Notes
+
+The implementation avoids modern framework dependencies and keeps JavaScript syntax compatible with older WebViews. CSS and SVG are used for the visual effects, with fallbacks kept simple for embedded browser environments.

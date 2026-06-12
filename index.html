@@ -138,6 +138,20 @@
       height: 154px;
     }
 
+    #style1 .center-glow {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 114px;
+      height: 114px;
+      margin: -57px 0 0 -57px;
+      border-radius: 50%;
+      background: -webkit-linear-gradient(top, rgba(255, 255, 255, .34) 0%, rgba(180, 195, 220, .18) 45%, rgba(60, 75, 105, .03) 100%);
+      background: linear-gradient(to bottom, rgba(255, 255, 255, .34) 0%, rgba(180, 195, 220, .18) 45%, rgba(60, 75, 105, .03) 100%);
+      -webkit-box-shadow: inset 0 1px 10px rgba(255, 255, 255, .12);
+      box-shadow: inset 0 1px 10px rgba(255, 255, 255, .12);
+    }
+
     #style1 .tick {
       margin-top: -70px;
       -webkit-transform-origin: 1px 70px;
@@ -146,9 +160,9 @@
     }
 
     #style1 .hour-hand {
-      width: 5px;
-      height: 66px;
-      margin-left: -2.5px;
+      width: 3px;
+      height: 46px;
+      margin-left: -1.5px;
       background: #f7f7f7;
     }
 
@@ -157,6 +171,15 @@
       height: 66px;
       margin-left: -1.5px;
       background: #fff;
+    }
+
+    #style1 .second-hand {
+      width: 2px;
+      height: 66px;
+      margin-left: -1px;
+      background: rgba(255, 255, 255, .96);
+      -webkit-box-shadow: 0 0 8px rgba(255, 255, 255, .45);
+      box-shadow: 0 0 8px rgba(255, 255, 255, .45);
     }
 
     #style1 .reflection {
@@ -168,8 +191,8 @@
       margin-left: -95px;
       overflow: hidden;
       opacity: .48;
-      -webkit-transform: scaleY(.58);
-      transform: scaleY(.58);
+      -webkit-transform: scaleY(.92);
+      transform: scaleY(.92);
       -webkit-filter: blur(.4px);
       filter: blur(.4px);
     }
@@ -353,11 +376,21 @@
         transform-origin: 1px 80px;
       }
 
+      #style1 .center-glow {
+        width: 134px;
+        height: 134px;
+        margin: -67px 0 0 -67px;
+      }
+
       #style1 .hour-hand {
-        height: 76px;
+        height: 67px;
       }
 
       #style1 .minute-hand {
+        height: 76px;
+      }
+
+      #style1 .second-hand {
         height: 76px;
       }
 
@@ -394,7 +427,9 @@
   <div id="style1" class="screen active">
     <div class="map" id="map1"></div>
     <div class="center clock-wrap">
-      <div class="clock analog first-clock" id="clock1"></div>
+      <div class="clock analog first-clock" id="clock1">
+        <span class="center-glow"></span>
+      </div>
     </div>
     <div class="reflection" id="reflection1">
       <svg class="reflection-svg" viewBox="0 0 190 72">
@@ -544,9 +579,9 @@
         var r1 = 76;
         var r2 = 88;
         var i;
-        for (i = 25; i <= 35; i++) {
+        for (i = 23; i <= 37; i++) {
           var deg = i * 6;
-          var fade = 1 - Math.abs(i - 30) / 6;
+          var fade = 1 - Math.abs(i - 30) / 8;
           var opacity = Math.max(0, Math.min(1, fade));
           var inner = pointOnCircle(cx, cy, i % 5 === 0 ? r1 - 3 : r1 + 3, deg);
           var outer = pointOnCircle(cx, cy, r2, deg);
@@ -561,7 +596,7 @@
         }
       }
 
-      var analog1 = makeAnalog('clock1', false);
+      var analog1 = makeAnalog('clock1', true);
       var analog2 = makeAnalog('clock2', true);
       setupSweepTrail();
       makeReflectionTicks();
@@ -583,6 +618,7 @@
 
         setRotate(analog1.hour, hourAngle);
         setRotate(analog1.minute, minuteAngle);
+        setRotate(analog1.second, jumpSecondAngle);
         setRotate(analog2.hour, hourAngle);
         setRotate(analog2.minute, minuteAngle);
         setRotate(analog2.second, jumpSecondAngle);
