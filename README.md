@@ -4,6 +4,11 @@ Volkswagen-style infotainment clock pages built with plain HTML, CSS, and JavaSc
 
 Live site: https://vw-clock.wangzehan.cn/
 
+Video demos:
+
+- [Bilibili](https://www.bilibili.com/video/BV1Qyj36fEBF)
+- [YouTube](https://www.youtube.com/watch?v=CmAB6F3wauc)
+
 ## Overview
 
 This project implements three clock display styles inspired by Volkswagen in-car infotainment screens. It is designed as a lightweight single-page web app and uses the system time for all clock displays.
